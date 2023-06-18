@@ -26,18 +26,43 @@ export default function BannerWelcome(props) {
   const ratingColor = movies?.adult ? "red" : "green";
 
   useEffect(() => {
-    const fetchData = async () => {
-      const result = await axios.get(props.fetchurl);
-      const data = result.data.results.map((movie) => ({
-        ...movie,
-        duration: movie.media_type === "movie" ? movie.duration : undefined,
-        number_of_seasons:
-          movie.media_type === "tv" ? movie.number_of_seasons : undefined,
-        certification:
-          movie.media_type === "movie" ? movie.certification : undefined,
-      }));
+    async function fetchData() {
+      const req = await axios.get(props.fetchurl);
+      const data = req.data.results.map((item) => {
+        const {
+          id,
+          title,
+          name,
+          poster_path,
+          first_air_date,
+          overview,
+          movie,
+          genre_ids,
+        } = item;
+        let url;
+        if (first_air_date) {
+          url = `/show/${id}-${slugify(name?.toLowerCase())}`;
+        } else {
+          url = `/movie/${id}-${slugify(title?.toLowerCase())}`;
+        }
+        return {
+          id,
+          title: title?.toLowerCase(),
+          name: name?.toLowerCase(),
+          poster_path,
+          url,
+          release_date: item.release_date || item.first_air_date,
+          vote_average: item.vote_average,
+          category: item.media_type === "tv" ? "Show" : "Movie",
+          overview: overview,
+          movie: movie,
+          genre_ids,
+        };
+      });
       setMovies(data);
-    };
+      return req;
+    }
+
     fetchData();
   }, [props.fetchurl]);
 
