@@ -47,8 +47,8 @@ export default function BannerWelcome(props) {
         }
         return {
           id,
-          title: title?.toLowerCase(),
-          name: name?.toLowerCase(),
+          title: item.title,
+          name: item.name,
           poster_path,
           url,
           release_date: item.release_date || item.first_air_date,
