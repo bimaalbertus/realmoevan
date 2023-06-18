@@ -171,9 +171,6 @@ export default function BannerWelcome(props) {
                       ) : (
                         <Duration>{formatDuration(movie.duration)}</Duration>
                       )} */}
-                      <AgeStyled ratingColor={ratingColor}>
-                        {movie?.adult ? "18+" : "PG"}
-                      </AgeStyled>
                     </div>
                     <Genre>
                       {movie.genre_ids.map((genreId) => (
@@ -188,7 +185,7 @@ export default function BannerWelcome(props) {
                         </div>
                       ))}
                     </Genre>
-                    <>
+                    <Link to={movie.url}>
                       <PlayButton>
                         <PlayImage
                           src="https://cdn-icons-png.flaticon.com/512/1179/1179120.png"
@@ -196,7 +193,7 @@ export default function BannerWelcome(props) {
                         />
                         <span>Play Now</span>
                       </PlayButton>
-                    </>
+                    </Link>
                     <p className="banner__overview">{movie?.overview}</p>
                   </BannerDesc>
                 </BannerContainer>
