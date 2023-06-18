@@ -1,0 +1,136 @@
+.card-slider {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  overflow: initial;
+  position: relative;
+  padding: 0 30px;
+  margin-bottom: 100px;
+}
+
+.card-slider-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  transition: transform 0.5s ease;
+}
+
+.card {
+  width: 250px;
+  margin-right: 20px;
+  box-shadow: 0px 0px 5px rgba(228, 222, 222, 0.3);
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.5s ease;
+}
+
+.card:hover {
+  transform: scale(1.1);
+}
+
+.card img {
+  width: 100%;
+  height: auto;
+  transition: transform 0.5s ease;
+}
+
+.card-overlay {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to top,
+    rgba(26, 34, 51, 1) 50%,
+    rgba(26, 34, 51, 0) 100%
+  );
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  padding: 20px;
+}
+
+.card:hover .card-overlay {
+  opacity: 1;
+}
+
+.card-overlay h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.card-overlay p {
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+.card-slider button {
+  border: none;
+  color: #333;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+  z-index: 5;
+  -webkit-transition: 0.2s ease-in-out;
+  -moz-transition: 0.2s ease-in-out;
+  -ms-transition: 0.2s ease-in-out;
+  -o-transition: 0.2s ease-in-out;
+}
+
+.card-slider button:hover {
+  background-color: rgba(71, 71, 71, 0.5);
+}
+
+.prev-btn,
+.next-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(51, 51, 51, 0.5);
+  opacity: 0;
+  visibility: hidden;
+}
+
+.card-slider:hover .prev-btn,
+.card-slider:hover .next-btn {
+  opacity: 1;
+  visibility: visible;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.arrow-left {
+  left: 0;
+}
+
+.arrow-right {
+  right: 0;
+}
+
+@media (max-width: 1280px) {
+  .card {
+    width: 200px;
+  }
+  .card-overlay {
+    top: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    width: 150px;
+  }
+
+  .prev-btn,
+  .next-btn {
+    display: none;
+  }
+}

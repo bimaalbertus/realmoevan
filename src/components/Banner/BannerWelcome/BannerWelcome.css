@@ -1,0 +1,152 @@
+.banner__wrapper {
+  color: white;
+  object-fit: contain;
+  height: 850px;
+  width: 100%;
+  margin: auto;
+}
+
+.banner__Searchbar {
+  margin-left: 30px;
+  padding: 40px 0 0 30px;
+  width: 90%;
+}
+
+.banner__description {
+  margin-left: 30px;
+  padding: 80px 0 0 30px;
+  height: 190px;
+}
+
+.banner-detail-container {
+  background-color: rgb(3, 37, 65, 0.3);
+  width: 100%;
+  height: 100%;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.banner__title {
+  font-size: 3rem;
+  font-weight: 800;
+  padding-bottom: 0.3rem;
+}
+
+.banner__overview {
+  line-height: 1.3;
+  padding-top: 1rem;
+  font-size: 18px;
+  max-width: 720px;
+  height: 80px;
+}
+
+@media screen and (max-width: 768px) {
+  .banner__overview {
+    height: auto;
+    max-width: 320px;
+    padding: 0 20px 0 0px;
+  }
+}
+
+.banner__button {
+  cursor: pointer;
+  color: #fff;
+  outline: none;
+  border: 2px solid #afafb0;
+  font-weight: 700;
+  border-radius: 10px;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  margin-right: 1rem;
+  padding-top: 0.5rem;
+  background-color: rgba(51, 51, 51, 0.5);
+  padding-bottom: 0.5rem;
+}
+
+.movie-rating {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+  margin-bottom: -1rem;
+  cursor: default;
+}
+
+.movie-rating .react-stars {
+  margin-right: 0.5rem;
+}
+
+.release_date {
+  border: 2px solid #f3ce13;
+  font-weight: 500;
+  border-radius: 10px;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding: 0.5rem;
+  background-color: transparent;
+  padding-bottom: 0.5rem;
+}
+.category {
+  border: 2px solid #f3ce13;
+  margin-left: 15px;
+  font-weight: 500;
+  border-radius: 10px;
+  padding: 0.5rem;
+  background-color: transparent;
+  padding-bottom: 0.5rem;
+}
+.banner__button:hover {
+  color: #000;
+  background-color: #e6e6e6;
+  transition: all 0.2s;
+}
+.banner__fadeBottom {
+  height: 7.5rem;
+}
+.banner__overview {
+  font-size: 16px;
+}
+
+.slider {
+  position: relative;
+}
+
+.slick-slider {
+  height: 100%; /* membuat slick-slider mengisi seluruh ruang yang tersedia */
+}
+
+@media (max-width: 768px) {
+  .slick-dots,
+  .arrow--prev,
+  .arrow--next {
+    display: none !important;
+  }
+  .banner__description {
+    margin: auto;
+  }
+  .banner__button {
+    display: flexbox;
+  }
+
+  .category,
+  .release_date {
+    width: 0;
+    height: 0;
+    font-size: 0;
+    border-radius: 0;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    -ms-border-radius: 0;
+    -o-border-radius: 0;
+    border: none;
+  }
+
+  .banner__Searchbar {
+    margin: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .banner__wrapper {
+    height: 1200px;
+  }
+}

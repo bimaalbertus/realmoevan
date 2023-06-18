@@ -1,0 +1,377 @@
+import "./Banner.css";
+import { useState, useEffect } from "react";
+import axios from "../../api/axios";
+import requests from "../../Request";
+import Slider from "react-slick";
+import styled from "styled-components";
+import { Link } from "react-router-dom";
+import leftArrow from "../../assets/images/icons/left-arrow-50-white.png";
+import rightArrow from "../../assets/images/icons/right-arrow-50-white.png";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import ReactStars from "react-stars";
+
+const Banner = () => {
+  const [movies, setMovies] = useState([]);
+  const [sliderIndex, setSliderIndex] = useState(0);
+
+  let sliderRef;
+
+  const handleBeforeChange = (current, next) => {
+    setSliderIndex(next);
+  };
+
+  const handleNextSlide = () => {
+    if (sliderIndex < movies.length - 1) {
+      setSliderIndex(sliderIndex + 1);
+      sliderRef.slickNext();
+    } else {
+      setSliderIndex(0);
+      sliderRef.slickGoTo(0);
+    }
+  };
+
+  const handlePrevSlide = () => {
+    if (sliderIndex > 0) {
+      setSliderIndex(sliderIndex - 1);
+      sliderRef.slickPrev();
+    } else {
+      setSliderIndex(movies.length - 1);
+      sliderRef.slickGoTo(movies.length - 1);
+    }
+  };
+
+  useEffect(() => {
+    async function fetchData() {
+      const response = await axios.get(requests.fetchTrending);
+      setMovies(response.data.results);
+      return response;
+    }
+    fetchData();
+  }, []);
+
+  let settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    pauseOnHover: true,
+    pauseOnDotsHover: true,
+    cssEase: "linear",
+    draggable: true,
+    fade: true,
+    arrows: true,
+    beforeChange: handleBeforeChange,
+  };
+
+  function slugify(string) {
+    return string
+      ?.toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w\-]+/g, "");
+  }
+
+  return (
+    <Container>
+      <SliderContainer {...settings} ref={(slider) => (sliderRef = slider)}>
+        {movies.map((movie) => (
+          <Wrap key={movie.id}>
+            <div
+              className="banner"
+              style={{
+                backgroundImage: `linear-gradient(to top, #112 0%, transparent 100%), url(http://image.tmdb.org/t/p/original/${movie.backdrop_path})`,
+                backgroundSize: "cover",
+              }}
+            >
+              <div className="banner__contents">
+                <h1 className="banner__title">
+                  {movie?.title || movie.name || movie?.original_name}
+                </h1>
+                <div className="banner__buttons">
+                  <Link
+                    to={`/${movie.first_air_date ? "show" : "movie"}/${
+                      movie.id
+                    }-${slugify(movie.title)}`}
+                  >
+                    <button type="button" className="banner__button">
+                      Play
+                    </button>
+                  </Link>
+
+                  <span className="release_date">
+                    {movie.release_date || movie.first_air_date}
+                  </span>
+                  <span className="category">
+                    {movie.media_type === "tv" ? "Show" : "Movie"}
+                  </span>
+                  <div className="movie-rating">
+                    <ReactStars
+                      count={5}
+                      value={Math.round(movie.vote_average / 2)}
+                      size={24}
+                      color2={"#ffd700"}
+                    />
+                  </div>
+                </div>
+                <p className="banner__description">{movie?.overview}</p>
+              </div>
+              <div className="banner__fadeBottom" />
+            </div>
+            <div className="arrow arrow--prev" onClick={handlePrevSlide}>
+              <img src={leftArrow} alt="Previous" />
+            </div>
+            <div className="arrow arrow--next" onClick={handleNextSlide}>
+              <img src={rightArrow} alt="Next" />
+            </div>
+          </Wrap>
+        ))}
+      </SliderContainer>
+    </Container>
+  );
+};
+
+const Wrap = styled.div``;
+
+const SliderContainer = styled(Slider)``;
+
+const Container = styled.div`
+  overflow-x: hidden;
+  height: 100%;
+  width: 100%;
+
+  &:hover .arrow {
+    opacity: 1;
+  }
+
+  .arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .arrow--prev {
+    left: 0;
+  }
+
+  .arrow--next {
+    right: 0;
+  }
+
+  .slick-dots {
+    position: absolute;
+    bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    z-index: 10;
+  }
+
+  .slick-dots li button:before {
+    font-size: 12px;
+    color: #fff;
+  }
+
+  .slick-dots li.slick-active button:before {
+    font-size: 20px;
+    color: #fff;
+  }
+`;
+
+export default Banner;
+
+// import "./Banner.css";
+// import { useState, useEffect } from "react";
+// import axios from "../../api/axios";
+// import requests from "../../Request";
+// import Slider from "react-slick";
+// import styled from "styled-components";
+// import { Link } from "react-router-dom";
+// import leftArrow from "../../assets/images/icons/left-arrow-50-white.png";
+// import rightArrow from "../../assets/images/icons/right-arrow-50-white.png";
+// import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+// import ReactStars from "react-stars";
+
+// const Banner = () => {
+//   const [movies, setMovies] = useState([]);
+//   const [sliderIndex, setSliderIndex] = useState(0);
+
+//   let sliderRef;
+
+//   const handleBeforeChange = (current, next) => {
+//     setSliderIndex(next);
+//   };
+
+//   const handleNextSlide = () => {
+//     if (sliderIndex < movies.length - 1) {
+//       setSliderIndex(sliderIndex + 1);
+//       sliderRef.slickNext();
+//     } else {
+//       setSliderIndex(0);
+//       sliderRef.slickGoTo(0);
+//     }
+//   };
+
+//   const handlePrevSlide = () => {
+//     if (sliderIndex > 0) {
+//       setSliderIndex(sliderIndex - 1);
+//       sliderRef.slickPrev();
+//     } else {
+//       setSliderIndex(movies.length - 1);
+//       sliderRef.slickGoTo(movies.length - 1);
+//     }
+//   };
+
+//   useEffect(() => {
+//     async function fetchData() {
+//       const response = await axios.get(requests.fetchTrending);
+//       setMovies(response.data.results);
+//       return response;
+//     }
+//     fetchData();
+//   }, []);
+
+//   let settings = {
+//     dots: true,
+//     infinite: true,
+//     speed: 500,
+//     slidesToShow: 1,
+//     slidesToScroll: 1,
+//     autoplay: true,
+//     autoplaySpeed: 3000,
+//     pauseOnHover: true,
+//     pauseOnDotsHover: true,
+//     cssEase: "linear",
+//     draggable: true,
+//     fade: true,
+//     arrows: true,
+//     beforeChange: handleBeforeChange,
+//   };
+
+//   function slugify(string) {
+//     return string
+//       ?.toLowerCase()
+//       .replace(/\s+/g, "-")
+//       .replace(/[^\w\-]+/g, "");
+//   }
+
+//   return (
+//     <Container>
+//       <Slider {...settings} ref={(slider) => (sliderRef = slider)}>
+//         {movies.map((movie) => (
+//           <Wrap key={movie.id}>
+//             <div
+//               className="banner"
+//               style={{
+//                 backgroundImage: `linear-gradient(to top, #112 0%, transparent 100%), url(http://image.tmdb.org/t/p/original/${movie.backdrop_path})`,
+//                 backgroundSize: "cover",
+//               }}
+//             >
+//               <div className="banner__contents">
+//                 <h1 className="banner__title">
+//                   {movie?.title || movie.name || movie?.original_name}
+//                 </h1>
+//                 <div className="banner__buttons">
+//                   <Link
+//                     to={`/${movie.first_air_date ? "show" : "movie"}/${
+//                       movie.id
+//                     }-${slugify(movie.title)}`}
+//                   >
+//                     <button type="button" className="banner__button">
+//                       Play
+//                     </button>
+//                   </Link>
+
+//                   <span className="release_date">
+//                     {movie.release_date || movie.first_air_date}
+//                   </span>
+//                   <span className="category">
+//                     {movie.media_type === "tv" ? "Show" : "Movie"}
+//                   </span>
+//                   <div className="movie-rating">
+//                     <ReactStars
+//                       count={5}
+//                       value={Math.round(movie.vote_average / 2)}
+//                       size={24}
+//                       color2={"#ffd700"}
+//                     />
+//                   </div>
+//                 </div>
+//                 <p className="banner__description">{movie?.overview}</p>
+//               </div>
+//               <div className="banner__fadeBottom" />
+//             </div>
+//             <div className="arrow arrow--prev" onClick={handlePrevSlide}>
+//               <img src={leftArrow} alt="Previous" />
+//             </div>
+//             <div className="arrow arrow--next" onClick={handleNextSlide}>
+//               <img src={rightArrow} alt="Next" />
+//             </div>
+//           </Wrap>
+//         ))}
+//       </Slider>
+//     </Container>
+//   );
+// };
+
+// const Wrap = styled.div``;
+
+// const Container = styled.div`
+//   overflow-x: hidden;
+//   height: 100%;
+//   width: 100%;
+
+//   &:hover .arrow {
+//     opacity: 1;
+//   }
+
+//   .arrow {
+//     position: absolute;
+//     top: 50%;
+//     transform: translateY(-50%);
+//     width: 50px;
+//     height: 50px;
+//     cursor: pointer;
+//     opacity: 0;
+//     transition: opacity 0.2s ease-in-out;
+//   }
+
+//   .arrow--prev {
+//     left: 0;
+//   }
+
+//   .arrow--next {
+//     right: 0;
+//   }
+
+//   .slick-dots {
+//     position: absolute;
+//     bottom: 10px;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     list-style: none;
+//     z-index: 10;
+//   }
+
+//   .slick-dots li button:before {
+//     font-size: 12px;
+//     color: #fff;
+//   }
+
+//   .slick-dots li.slick-active button:before {
+//     font-size: 20px;
+//     color: #fff;
+//   }
+// `;
+
+// export default Banner;
+
+// Aku sudah menemukan masalah button yang aku beritahu tadi. Ternyata itu disebabkan oleh fade: true pada settings. Setelah aku menghapus fade: true, masalah button teratasi, tetapi muncul masalah baru, yaitu arrows tidak terlihat. Aku ingin, dengan fade: true yang sudah dihapus, arrows tetap berada di posisi semula, dan terlihat saat container dihover. Aku sudah mencoba menggunakan z-index, tapi masih saja belum bisa diatasi
