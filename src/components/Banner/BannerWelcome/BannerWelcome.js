@@ -38,6 +38,7 @@ export default function BannerWelcome(props) {
           overview,
           movie,
           genre_ids,
+          backdrop_path
         } = item;
         let url;
         if (first_air_date) {
@@ -57,6 +58,7 @@ export default function BannerWelcome(props) {
           overview: overview,
           movie: movie,
           genre_ids,
+          backdrop_path
         };
       });
       setMovies(data);
