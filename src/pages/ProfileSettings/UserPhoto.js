@@ -14,6 +14,9 @@ import PopUp from "../../utils/PopUpMessage/PopUp";
 import { IconButton } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+import { toast } from "react-toastify";
+import EditIcon from "@mui/icons-material/Edit";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 function UserPhoto() {
   const [profileImage, setProfileImage] = useState(null);
@@ -25,7 +28,6 @@ function UserPhoto() {
   const storageRef = ref(storage);
   const [isShown, setIsShown] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [message, setMessage] = useState("");
 
   const images = [
     {
@@ -59,6 +61,16 @@ function UserPhoto() {
     // Tambahkan gambar yang ingin ditampilkan
   ];
 
+  const [randomCharacter, setRandomCharacter] = useState("");
+
+  const generateRandomCharacter = () => {
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    const randomChar = characters.charAt(randomIndex);
+    setRandomCharacter(randomChar);
+  };
+
   useEffect(() => {
     if (!authUser) return; // Jika pengguna belum masuk, hentikan efek samping
 
@@ -84,16 +96,24 @@ function UserPhoto() {
       alert("You're not login yet!!");
       return;
     }
-    const imageRef = ref(storage, `profile-images/${authUser.uid}`);
-    await uploadBytes(imageRef, profileImage);
+    try {
+      const randomCharacter = generateRandomCharacter();
+      const imageRef = ref(
+        storage,
+        `profile-images/${authUser.uid}-${randomCharacter}`
+      );
+      await uploadBytes(imageRef, profileImage);
 
-    const userRef = doc(firestore, "users", authUser.uid);
-    await updateDoc(userRef, {
-      profileImageURL: await getDownloadURL(imageRef),
-    });
-    setProfileImageURL(await getDownloadURL(imageRef));
-    setProfileImage(null);
-    setMessage("Success change avatar, refresh the page!");
+      const userRef = doc(firestore, "users", authUser.uid);
+      await updateDoc(userRef, {
+        profileImageURL: await getDownloadURL(imageRef),
+      });
+      setProfileImageURL(await getDownloadURL(imageRef));
+      setProfileImage(null);
+      toast.succes("Success change avatar, refresh the page!");
+    } catch (error) {
+      toast.error("Error Occurred");
+    }
   }
 
   function handleProfileImageChange(event) {
@@ -127,7 +147,11 @@ function UserPhoto() {
       const blob = await response.blob();
 
       const userRef = doc(firestore, "users", authUser.uid);
-      const imageRef = ref(storage, `profile-images/${authUser.uid}`);
+      const randomCharacter = generateRandomCharacter();
+      const imageRef = ref(
+        storage,
+        `profile-images/${authUser.uid}-${randomCharacter}`
+      );
 
       await uploadBytes(imageRef, blob);
       await updateDoc(userRef, {
@@ -136,10 +160,10 @@ function UserPhoto() {
 
       setProfileImageURL(await getDownloadURL(imageRef));
       setIsShown(false);
-      setMessage("Profile image has been updated successfully");
+      toast.succes("Profile image has been updated successfully");
     } catch (error) {
       console.error(error);
-      setMessage("Failed to update profile image");
+      toast.error("Failed to update profile image");
     }
   }
 
@@ -149,7 +173,11 @@ function UserPhoto() {
       return;
     }
 
-    const imageRef = ref(storage, `profile-images/${authUser.uid}`);
+    const randomCharacter = generateRandomCharacter();
+    const imageRef = ref(
+      storage,
+      `profile-images/${authUser.uid}-${randomCharacter}`
+    );
 
     // tampilkan prompt konfirmasi
     const confirmDelete = window.confirm(
@@ -170,10 +198,10 @@ function UserPhoto() {
         );
         setProfileImage(null);
         setIsOpen(false);
-        setMessage("Profile image has been deleted successfully");
+        toast.succes("Profile image has been deleted successfully");
       } catch (error) {
         console.error(error);
-        setMessage("Failed to delete profile image");
+        toast.error("Failed to delete profile image");
       }
     }
   }
@@ -190,38 +218,14 @@ function UserPhoto() {
   return (
     <>
       <Container>
-        {message && <PopUp message={message} setMessage={setMessage} />}
         <div className="imageBox">
           <div className="imageInn">
-            <UserImg src={profileImageURL} onClick={handleOpenImage} />
+            <UserImg src={profileImageURL} />
           </div>
-          <div className="hoverImg" onClick={handleOpenImage}>
-            <HoverTextImage>Preview Image</HoverTextImage>
-          </div>
+          <HoverTextImage onClick={handleOpen}>
+            <EditIcon />
+          </HoverTextImage>
         </div>
-        {isOpen && (
-          <ImageShowContainer>
-            <MessagePopup>
-              <PreviewImage src={profileImageURL} alt="Preview Image" />
-              <IconButton
-                className="close-btn-image"
-                style={{ float: "right" }}
-                onClick={handleCloseImage}
-              >
-                <HighlightOffIcon
-                  style={{ fontSize: "50px", color: "#d9534f" }}
-                />
-              </IconButton>
-              {profileImageURL !==
-              "https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png?20201013161117" ? (
-                <IconButton onClick={handleDeleteImage}>
-                  <DeleteIcon style={{ fontSize: "50px", color: "#d9534f" }} />
-                </IconButton>
-              ) : null}
-            </MessagePopup>
-          </ImageShowContainer>
-        )}
-        <SubmitButton onClick={handleOpen}>Change Image</SubmitButton>
       </Container>
       {isShown && (
         <>
@@ -249,10 +253,7 @@ function UserPhoto() {
             <CloseButton onClick={handleClose}>
               <CloseIcon />
             </CloseButton>
-            <h2 style={{ textAlign: "center", color: "#fff" }}>Or</h2>
             <DropContainer htmlFor="image-upload">
-              <span className="drop-title">Drop photo here</span>
-              or
               <Upload
                 type="file"
                 id="profile-image"
@@ -263,10 +264,10 @@ function UserPhoto() {
                 accept="image/*"
                 required
               />
+              <SubmitButton onClick={handleProfileImageUpload}>
+                <CloudUploadIcon />
+              </SubmitButton>
             </DropContainer>
-            <SubmitButton onClick={handleProfileImageUpload}>
-              Submit
-            </SubmitButton>
           </PopupContainer>
         </>
       )}
@@ -276,53 +277,40 @@ function UserPhoto() {
 
 export default UserPhoto;
 
-const SubmitButton = styled.span`
-  background-color: #3140f0;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  margin-top: 40px;
-  color: #fff;
-  transition: 0.5s ease-in-out;
-  z-index: 3;
-
-  span {
-    font-size: 20px;
-  }
-
-  &:hover {
-    background-color: #3f51b5;
-    color: #fff;
-  }
-`;
-
 const UserImg = styled.img`
-  border-radius: 50%;
-  width: 200px;
-  height: 200px;
-  cursor: pointer;
+  width: 150px;
+  height: 150px;
   object-fit: cover;
 `;
 
-const ChooseImg = styled.img`
-  width: 100px;
-  height: 100px;
+const HoverTextImage = styled.button`
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  font-size: 18px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
-  margin: 10px;
-`;
-
-const HoverTextImage = styled.span`
-  height: auto;
-  cursor: pointer;
-  position: relative;
-  top: 45%;
-  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: rgb(32, 33, 36, 0.8);
+  border: none;
   color: #fff;
+  transition: 0.5s;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 768px) {
+    height: 45px;
+    padding: 0px 20px;
+    font-size: 12px;
+    margin: 0px 10px 0px 0px;
+  }
 `;
 
 const Container = styled.div`
@@ -333,36 +321,14 @@ const Container = styled.div`
 
   .imageInn {
     display: flex;
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
     align-items: center;
   }
 
   .imageBox {
     position: relative;
     float: left;
-  }
-
-  .hoverImg {
-    position: absolute;
-    cursor: pointer;
-    left: 0;
-    top: 0;
-    opacity: 0;
-    border-radius: 50%;
-    display: flex;
-    transition: opacity 0.3s ease-in-out;
-    background-color: rgb(32, 33, 36, 0.8);
-    width: 200px;
-    height: 200px;
-    text-align: center;
-    justify-content: center;
-  }
-
-  .imageBox:hover .hoverImg {
-    display: block;
-    border-radius: 50%;
-    opacity: 1;
   }
 
   .close-btn-image {
@@ -372,17 +338,22 @@ const Container = styled.div`
   }
 `;
 
+const DropContainer = styled.label`
+  position: relative;
+  display: flex;
+  justify-content: center;
+  transition: background 0.2s ease-in-out, border 0.2s ease-in-out;
+`;
+
 const Upload = styled.input`
-  width: 100%;
-  max-width: 100%;
   color: #444;
   padding: 5px;
   background: #fff;
   border-radius: 10px;
   border: 1px solid #555;
+  margin: 20px;
 
   ::file-selector-button {
-    margin-right: 20px;
     border: none;
     background: #084cdf;
     padding: 10px 20px;
@@ -397,33 +368,28 @@ const Upload = styled.input`
   }
 `;
 
-const DropContainer = styled.label`
-  position: relative;
-  margin: 40px;
+const SubmitButton = styled.span`
+  background-color: rgb(8, 76, 223);
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
   display: flex;
-  gap: 10px;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 200px;
-  padding: 20px;
-  border-radius: 10px;
-  border: 2px dashed #555;
-  color: #fff;
+  gap: 8px;
   cursor: pointer;
-  transition: background 0.2s ease-in-out, border 0.2s ease-in-out;
+  color: #fff;
+  transition: 0.5s ease-in-out;
+  z-index: 3;
+  margin: 20px;
 
-  &:hover {
-    background: #eee;
-    border-color: #111;
-    color: #444;
+  span {
+    font-size: 20px;
   }
 
-  .drop-title {
-    font-size: 20px;
-    font-weight: bold;
-    text-align: center;
-    transition: color 0.2s ease-in-out;
+  &:hover {
+    transform: scale(1.05);
+    color: #fff;
   }
 `;
 
@@ -439,6 +405,11 @@ const PopupContainer = styled.div`
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.8);
   width: 60%;
+
+  @media (max-width: 768px) {
+    width: 90%;
+    padding: 20px;
+  }
 `;
 
 const CloseButton = styled.button`
@@ -456,32 +427,13 @@ const CloseButton = styled.button`
   }
 `;
 
-const MessagePopup = styled.div`
-  position: fixed;
-  z-index: 99;
-  top: 0;
-  left: 0;
+const ChooseImg = styled.img`
   width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const ImageShowContainer = styled.div`
-  position: fixed;
-  z-index: 99;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-`;
-
-const PreviewImage = styled.img`
-  width: 50%;
   height: auto;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    max-width: 80px;
+    max-height: 80px;
+  }
 `;
