@@ -3,11 +3,10 @@ import { Button, Container, Grid, Paper, TextField } from "@material-ui/core";
 import { firebaseAuthentication, db } from "../../firebase";
 import styled from "styled-components";
 import UserPhoto from "./UserPhoto";
-import PopUp from "../../utils/PopUpMessage/PopUp";
+import { toast } from "react-toastify";
 
 export default function ProfileSettings() {
   const currentUser = firebaseAuthentication.currentUser;
-  const [message, setMessage] = useState("");
   const [userDetails, setUserDetails] = useState({
     username: "",
     email: "",
@@ -49,16 +48,16 @@ export default function ProfileSettings() {
     if (username !== currentUser.username) {
       promises.push(currentUser.updateProfile({ username }));
       promises.push(userRef.update({ username }));
-      setMessage("Success change username, refresh the page!");
+      toast.succes("Success change username, refresh the page!");
     }
     if (email !== currentUser.email) {
       promises.push(currentUser.updateEmail(email));
       promises.push(userRef.update({ email }));
-      setMessage("Success change email, refresh the page!");
+      toast.succes("Success change email, refresh the page!");
     }
     if (password) {
       promises.push(currentUser.updatePassword(password));
-      setMessage("Success update password, refresh the page!");
+      toast.succes("Success update password, refresh the page!");
     }
 
     Promise.all(promises)
@@ -73,7 +72,6 @@ export default function ProfileSettings() {
   return (
     <Body>
       <Wrapper>
-        {message && <PopUp message={message} setMessage={setMessage} />}
         <UserPhoto />
         <UserName>{userDetails.username}</UserName>
         <InputContainer>
@@ -164,6 +162,7 @@ const Body = styled.div`
   margin: 0;
   padding: 40px;
   display: flex;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   color: #000;
@@ -174,7 +173,8 @@ const Wrapper = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  flex-direction: row;
   align-items: center;
   padding: 40px;
 `;
