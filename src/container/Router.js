@@ -26,7 +26,7 @@ import ForgotPassword from "../pages/RegisterPage/ForgotPassword.js";
 import LoginPage from "../pages/RegisterPage/LoginPage.js";
 import PopularMovies from "../pages/SideBarPage/Movies/PopularMovies.js";
 import TopRatedMovies from "../pages/SideBarPage/Movies/TopRatedMovies";
-import SortByGenreMovie from "../pages/SideBarPage/Movies/SortByGenreMovies.js";
+import SortByGenreMovie from "../pages/Navbar and Viewers/SortByGenreMovies.js";
 import PrivateRoute from "./PrivateRoute.js";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useState, useEffect } from "react";
@@ -34,10 +34,36 @@ import { AuthContextProvider } from "./AuthContext";
 import ProfileContainer from "../pages/ProfileSettings/ProfileContainer.js";
 import PopUp from "../utils/PopUpMessage/PopUp.js";
 import SavedContainer from "../components/SavedMovies/SavedContainer.js";
+import { useMediaQuery } from "react-responsive";
+import SideNavBar from "../components/SideNavBar/SideNavBar.js";
+import PlayerMovie from "../components/Player/PlayerMovie.js";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import SortByGenreTV from "../pages/Navbar and Viewers/TvShows.js";
+
+const LayoutWithSidebar = ({ children }) => {
+  return (
+    <>
+      <SideNavBar />
+      <div>{children}</div>
+      <FooterContainer />
+    </>
+  );
+};
+
+const LayoutWithoutFooter = ({ children }) => {
+  return (
+    <>
+      <SideNavBar />
+      <div>{children}</div>
+    </>
+  );
+};
 
 function Router() {
   const [message, setMessage] = useState("");
   const [authUser, setAuthUser] = useState(null);
+  const isMobile = useMediaQuery({ maxWidth: "600px" });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(getAuth(), (user) => {
@@ -49,38 +75,171 @@ function Router() {
 
   return (
     <>
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <BrowserRouter>
-        <Sidebar />
         <AppContainer>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/user" element={<ProfileContainer />} />
-            <Route path="/series" element={<TvShows />} />
-            <Route path="/trending" element={<TrendingPage />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/movies/toprated" element={<TopRatedMovies />} />
-            <Route path="/movies/popular" element={<PopularMovies />} />
-            <Route path="/movies/sort_by" element={<SortByGenreMovie />} />
-            <Route path="/marvel" element={<MarvelPage />} />
-            <Route path="/disney" element={<DisneyPage />} />
-            <Route path="/pixar" element={<PixarPage />} />
-            <Route path="/dreamworks" element={<DreamWorksPage />} />
-            <Route path="/query=Star%20Wars" element={<StarWarsPage />} />
+            <Route
+              path="/:countryCode/:uid"
+              element={
+                <LayoutWithSidebar>
+                  <Home />
+                </LayoutWithSidebar>
+              }
+            />
+            <Route
+              path="/:countryCode"
+              element={
+                <LayoutWithSidebar>
+                  <Home />
+                </LayoutWithSidebar>
+              }
+            />
+            <Route
+              path="/"
+              element={
+                <LayoutWithSidebar>
+                  <Home />
+                </LayoutWithSidebar>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <LayoutWithSidebar>
+                  <RegisterPage />
+                </LayoutWithSidebar>
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                <LayoutWithSidebar>
+                  <LoginPage />
+                </LayoutWithSidebar>
+              }
+            />
+            <Route
+              path="/forgot-password"
+              element={
+                <LayoutWithSidebar>
+                  <ForgotPassword />
+                </LayoutWithSidebar>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <LayoutWithoutFooter>
+                  <ProfileContainer />
+                </LayoutWithoutFooter>
+              }
+            />
+            <Route
+              path="/series"
+              element={
+                <LayoutWithSidebar>
+                  <SortByGenreTV />
+                </LayoutWithSidebar>
+              }
+            />
+            {/* <Route
+              path="/trending"
+              element={
+                <LayoutWithSidebar>
+                  <TrendingPage />
+                </LayoutWithSidebar>
+              }
+            /> */}
+            {/* <Route
+              path="/about"
+              element={
+                <LayoutWithSidebar>
+                  <About />
+                </LayoutWithSidebar>
+              }
+            /> */}
+            <Route
+              path="/movies"
+              element={
+                <LayoutWithSidebar>
+                  <SortByGenreMovie />
+                </LayoutWithSidebar>
+              }
+            />
+            {/* <Route path="/marvel" element={<MarvelPage />} />
+                <Route path="/disney" element={<DisneyPage />} />
+                <Route path="/pixar" element={<PixarPage />} />
+                <Route path="/dreamworks" element={<DreamWorksPage />} />
+                <Route path="/query=Star%20Wars" element={<StarWarsPage />} /> */}
             {/* <Route path="/subscription" element={<Subscription />} /> */}
-            {/* <Route path="/film=:id" element={<MovieDetail />} /> */}
-            <Route path="/person/:id-:name" element={<PersonDetail />} />
+            {/* <Route path="/film=:id" element={<MovieBannerAlternate />} /> */}
+            <Route
+              path="/person/:id-:name"
+              element={
+                <LayoutWithSidebar>
+                  <PersonDetail />
+                </LayoutWithSidebar>
+              }
+            />
             {/* <Route path="/:category/:id" element={ <Moviebanner />} /> */}
-            <Route path="/:category/:id-:title" element={<MovieDetail />} />
-            <Route path="/:category/:id" element={<MovieDetail />} />
-            <Route path="/search" element={<Search />} />
-            <Route path="/:category/:id-:title/watch" element={<Watch />} />
-            <Route path="/saved" element={<SavedContainer />} />
+            <Route
+              path="/:category/:id-:title"
+              element={
+                <LayoutWithSidebar>
+                  <MovieBannerAlternate />
+                </LayoutWithSidebar>
+              }
+            />
+            <Route
+              path="/:category/:id"
+              element={
+                <LayoutWithSidebar>
+                  <MovieBannerAlternate />
+                </LayoutWithSidebar>
+              }
+            />
+            <Route
+              path="/search"
+              element={
+                <LayoutWithSidebar>
+                  <Search />
+                </LayoutWithSidebar>
+              }
+            />
+            <Route
+              path="/:category/:id-:title/watch"
+              element={<PlayerMovie />}
+            />
+            <Route
+              path="/show/:id-:title/watch"
+              element={
+                <LayoutWithSidebar>
+                  <PlayerSeries />
+                </LayoutWithSidebar>
+              }
+            />
+            {/* <Route
+              path="/saved"
+              element={
+                <LayoutWithSidebar>
+                  <SavedContainer />
+                </LayoutWithSidebar>
+              }
+            /> */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-          <FooterContainer />
         </AppContainer>
       </BrowserRouter>
     </>
