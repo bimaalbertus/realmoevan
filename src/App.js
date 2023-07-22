@@ -25,6 +25,8 @@ class ErrorBoundary extends Component {
 }
 
 function App({ src }) {
+console.clear();
+  
   return (
     <QueryParamProvider>
       <Router />
