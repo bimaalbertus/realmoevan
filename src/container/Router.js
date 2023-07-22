@@ -73,6 +73,12 @@ function Router() {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    console.clear();
+  }, []);
+
+  console.clear();
+
   return (
     <>
       <ToastContainer
