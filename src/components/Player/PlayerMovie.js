@@ -36,7 +36,7 @@ export default function Player() {
         <Video>
           <div className="video-wrapper">
             <iframe
-              src={`https://autoembed.to/movie/tmdb/${id}`}
+              src={`https://multiembed.mov/?video_id=${id}&tmdb=1`}
               title="GO-Watch Video Player"
               frameborder="0"
               allow="accelerometer; clipboard-write; encrypted-media; gyroscope"
