@@ -50,7 +50,7 @@ const PlayerSeries = (props, { url, seasonNumber, episodeNumber }) => {
 
   useEffect(() => {
     if (selectedEpisode) {
-      const url = `https://autoembed.to/tv/tmdb/${id}-${selectedEpisode.season}-${selectedEpisode.episode}`;
+      const url = ` https://multiembed.mov/?video_id=${id}&tmdb=1&s=${selectedEpisode.season}&e=${selectedEpisode.episode}`;
       setEmbedUrl(url);
     } else {
       console.log("Error Getting Movie!");
